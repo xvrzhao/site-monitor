@@ -28,8 +28,8 @@ type logger struct {
 func (l *logger) string() string {
 	var msg string
 	for _, record := range l.records {
-		msg += fmt.Sprintf("- %v normal: %v | status code: %d | timeout: %v | error: %s\n",
-			record.Time, record.IsNormal, record.StatusCode, record.IsTimeout, record.Error.Error())
+		msg += fmt.Sprintf("- %v normal: %v | status code: %d | timeout: %v | error: %v\n",
+			record.Time, record.IsNormal, record.StatusCode, record.IsTimeout, record.Error)
 	}
 	return msg
 }
