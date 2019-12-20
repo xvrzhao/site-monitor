@@ -7,9 +7,11 @@ Availability Monitor for websites or HTTP services.
 - Email notification when the website is unhealthy
 
 ## Installation
+If you installed Go tools on your operating system:
 ```shell script
 $ go get github.com/xvrzhao/site-monitor
 ```
+Otherwise, download the pre-compiled binary executable file on [release page](https://github.com/xvrzhao/site-monitor/releases) according to your operating system type.
 
 ## Usage
 ```shell script
