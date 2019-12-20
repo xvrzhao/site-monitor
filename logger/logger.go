@@ -56,7 +56,7 @@ func check() {
 	if unNormal >= 5 {
 		parser.Debug("* Site status: unhealthy\n")
 		go mailer.Send(loggerInstance.string())
-	} else if float64(unNormal)/float64(len(loggerInstance.records)) >= 0.5 {
+	} else if float64(unNormal)/float64(len(loggerInstance.records)) > 0.5 {
 		parser.Debug("* Site status: unhealthy\n")
 	} else {
 		parser.Debug("* Site status: healthy\n")

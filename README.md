@@ -2,8 +2,8 @@
 Availability Monitor for websites or HTTP services.
 
 ## Features
-- Support multiple parameter settings to meet monitoring requirements
-- Real-time status information
+- Support multiple flag settings to meet monitoring requirements
+- Real-time website status information
 - Email notification when the website is unhealthy
 
 ## Installation
@@ -12,13 +12,7 @@ $ go get github.com/xvrzhao/site-monitor
 ```
 
 ## Usage
-
 ```shell script
-$ site-monitor --monitor-url=http://example.com --monitor-interval=3000 \
---mail-smtp-auth-host=smtp.example.com --mail-smtp-server-addr=smtp.example.com:25 \
---mail-from-addr=site@example.com --mail-from-name=site-monitor --mail-from-password=password \
---mail-to-addr=xvrzhao@gmail.com \
---debug-mode
+$ site-monitor -url=http://example.com -cycle=3000 -mail-faddr=sender@qq.com -mail-fpwd=senderpassword -mail-taddr=recipient@gmail.com -mail-auth=smtp.qq.com -mail-server=smtp.qq.com:25 -debug
 ```
-
-Run `site-monitor --help` for more usage information.
+Run `site-monitor -h` for more usage information.

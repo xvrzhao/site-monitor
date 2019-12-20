@@ -1,3 +1,3 @@
 module github.com/xvrzhao/site-monitor
 
-go 1.13
+go 1.13.5

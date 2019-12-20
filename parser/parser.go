@@ -3,12 +3,13 @@ package parser
 import (
 	"flag"
 	"log"
+	"strconv"
 	"time"
 )
 
 var (
-	monitorIntervalStr, monitorTotalTimeoutStr, monitorRespHeaderTimeoutStr string
-	debug                                                                   bool
+	monitorInterval, monitorTotalTimeout, monitorRespHeaderTimeout int
+	debug                                                          bool
 )
 
 var (
@@ -32,57 +33,59 @@ func Debug(format string, v ...interface{}) {
 }
 
 func init() {
-	flag.BoolVar(&debug, "debug-mode", false, "turn on debug mode")
+	flag.BoolVar(&debug, "debug", false, "turn on debug mode")
 
-	flag.StringVar(&MonitorURL, "monitor-url", "", "the url for monitor")
-	flag.StringVar(&monitorIntervalStr, "monitor-interval", "20000", "milli second, testing cycle")
-	flag.StringVar(&monitorTotalTimeoutStr, "monitor-total-timeout", "5000", "milli second, timeout for waiting url response")
-	flag.StringVar(&monitorRespHeaderTimeoutStr, "monitor-respheader-timeout", "2000", "milli second, timeout for waiting response header")
+	flag.StringVar(&MonitorURL, "url", "", "HTTP URL to monitor")
+	flag.IntVar(&monitorInterval, "cycle", 20000, "detection cycle in milliseconds")
+	flag.IntVar(&monitorTotalTimeout, "timeout", 5000, "timeout for waiting for HTTP response, in milliseconds")
+	flag.IntVar(&monitorRespHeaderTimeout, "header-timeout", 2000, "timeout for waiting for HTTP response headers after establishing a connection, in milliseconds")
 
-	flag.StringVar(&MailFromName, "mail-from-name", "", "sender's name")
-	flag.StringVar(&MailFromAddr, "mail-from-addr", "", "sender's mail address")
-	flag.StringVar(&MailFromPwd, "mail-from-password", "", "sender's smtp auth code")
-	flag.StringVar(&MailToAddr, "mail-to-addr", "", "receiver's mail address")
-	flag.StringVar(&MailSMTPAuthHost, "mail-smtp-auth-host", "", "smtp auth host")
-	flag.StringVar(&MailSMTPServerAddr, "mail-smtp-server-addr", "", "smtp server addr")
+	flag.StringVar(&MailFromName, "mail-fname", "Site Monitor", "mail sender's name")
+	flag.StringVar(&MailFromAddr, "mail-faddr", "", "mail sender's address")
+	flag.StringVar(&MailFromPwd, "mail-fpwd", "", "mail sender's SMTP password")
+	flag.StringVar(&MailToAddr, "mail-taddr", "", "mail recipient address")
+	flag.StringVar(&MailSMTPAuthHost, "mail-auth", "", "SMTP authentication host address")
+	flag.StringVar(&MailSMTPServerAddr, "mail-server", "", "SMTP server address")
 
+	//testing.Init() // uncomment when executing unit tests
 	flag.Parse()
 
-	if MonitorURL == "" {
-		log.Fatalf("missing monitor param: --monitor-url\n")
-	}
-	convertDuration(&monitorIntervalStr, &MonitorInterval)
-	convertDuration(&monitorTotalTimeoutStr, &MonitorTotalTimeout)
-	convertDuration(&monitorRespHeaderTimeoutStr, &MonitorRespHeaderTimeout)
+	convertDuration(monitorInterval, &MonitorInterval)
+	convertDuration(monitorTotalTimeout, &MonitorTotalTimeout)
+	convertDuration(monitorRespHeaderTimeout, &MonitorRespHeaderTimeout)
 
 	var miss string
+
+	if MonitorURL == "" {
+		miss += "-url, "
+	}
 	if MailFromName == "" {
-		miss += "--mail-from-name, "
+		miss += "-mail-fname, "
 	}
 	if MailFromAddr == "" {
-		miss += "--mail-from-addr, "
+		miss += "-mail-faddr, "
 	}
 	if MailFromPwd == "" {
-		miss += "--mail-from-password, "
+		miss += "-mail-fpwd, "
 	}
 	if MailToAddr == "" {
-		miss += "--mail-to-addr, "
+		miss += "-mail-taddr, "
 	}
 	if MailSMTPAuthHost == "" {
-		miss += "--mail-smtp-auth-host, "
+		miss += "-mail-auth, "
 	}
 	if MailSMTPServerAddr == "" {
-		miss += "--mail-smtp-server-addr, "
+		miss += "-mail-server, "
 	}
 	if miss != "" {
-		log.Fatalf("missing mail param(s): %srun `site-monitor --help` for more information.", miss)
+		log.Fatalf("missing the necessary flag(s): %srun `site-monitor -h` for more information about each flag.", miss)
 	}
 }
 
-func convertDuration(str *string, du *time.Duration) {
-	d, err := time.ParseDuration(*str + "ms")
+func convertDuration(n int, du *time.Duration) {
+	d, err := time.ParseDuration(strconv.Itoa(n) + "ms")
 	if err != nil {
-		log.Fatalln("input monitor time param error")
+		log.Fatalln("the input time format is not available")
 	}
 	*du = d
 }
