@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -17,13 +18,16 @@ var (
 	mailFromNameFlag   string
 	mailFromAddrFlag   string
 	mailFromPwdFlag    string
-	mailToAddrFlag     string
+	mailToAddrFlag     []string
 	mailAuthHostFlag   string
 	mailServerAddrFlag string
 )
 
 func init() {
-	var cycle, timeout, headerTimeout int
+	var (
+		cycle, timeout, headerTimeout int
+		recipients                    string
+	)
 
 	flag.BoolVar(&debugFlag, "debug", false, "turn on debug mode")
 
@@ -35,7 +39,7 @@ func init() {
 	flag.StringVar(&mailFromNameFlag, "mail-fname", "Site Monitor", "mail sender's name")
 	flag.StringVar(&mailFromAddrFlag, "mail-faddr", "", "mail sender's address")
 	flag.StringVar(&mailFromPwdFlag, "mail-fpwd", "", "mail sender's SMTP password")
-	flag.StringVar(&mailToAddrFlag, "mail-taddr", "", "mail recipient address")
+	flag.StringVar(&recipients, "mail-taddr", "", "mail recipients' address, support mass mailing, for example: -mail-taddr=john@icloud.com,tom@gmail.com")
 	flag.StringVar(&mailAuthHostFlag, "mail-auth", "", "SMTP authentication host address")
 	flag.StringVar(&mailServerAddrFlag, "mail-server", "", "SMTP server address")
 
@@ -56,7 +60,7 @@ func init() {
 	if mailFromPwdFlag == "" {
 		miss += "-mail-fpwd, "
 	}
-	if mailToAddrFlag == "" {
+	if recipients == "" {
 		miss += "-mail-taddr, "
 	}
 	if mailAuthHostFlag == "" {
@@ -72,6 +76,8 @@ func init() {
 	convertDuration(cycle, &cycleFlag)
 	convertDuration(timeout, &timeoutFlag)
 	convertDuration(headerTimeout, &headerTimeoutFlag)
+
+	convertRecipient(recipients, &mailToAddrFlag)
 }
 
 func convertDuration(n int, du *time.Duration) {
@@ -80,4 +86,11 @@ func convertDuration(n int, du *time.Duration) {
 		log.Fatal("the input time format is not available")
 	}
 	*du = d
+}
+
+func convertRecipient(str string, sli *[]string) {
+	*sli = strings.Split(str, ",")
+	for k, v := range *sli {
+		(*sli)[k] = strings.Trim(v, " ")
+	}
 }
