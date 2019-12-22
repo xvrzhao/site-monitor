@@ -2,3 +2,4 @@
 .DS_Store
 nohup.out
 site-monitor
+bin_gen.sh
